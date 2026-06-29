@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>MindSpark — Staff Results</title>
+  <style>
+    body{font-family:Inter,system-ui,Arial;background:#0b1320;color:#eaf2ff;margin:0;padding:20px}
+    h1{margin:0 0 12px}
+    .bar{display:flex;gap:10px;align-items:center;margin-bottom:14px}
+    input,button{padding:10px;border-radius:10px;border:1px solid #23314a;background:#121c2e;color:#eaf2ff}
+    table{width:100%;border-collapse:collapse;background:#0f1a2b}
+    th,td{padding:10px;border-bottom:1px solid #22324f;text-align:left}
+    th{position:sticky;top:0;background:#13223a}
+    .ok{color:#34d399}.bad{color:#ff6b6b}
+  </style>
+</head>
+<body>
+  <h1>MindSpark — Staff Results</h1>
+  <div class="bar">
+    <input id="q" placeholder="Search name or reg..."/>
+    <button id="refresh">Refresh</button>
+    <button id="csv">Download CSV</button>
+  </div>
+  <table id="t">
+    <thead>
+      <tr>
+        <th>Time</th><th>Name</th><th>Reg</th><th>Email</th>
+        <th>Score</th><th>%</th><th>Duration(min)</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+<script>
+const API = 'YOUR_WEB_APP_URL'; // same Apps Script URL
+
+let rows = [];
+const tbody = document.querySelector('#t tbody');
+const q = document.getElementById('q');
+
+async function load(){
+  const res = await fetch(API);
+  rows = await res.json();
+  render();
+}
+function render(){
+  const term = q.value.trim().toLowerCase();
+  tbody.innerHTML = '';
+  rows
+    .filter(r => !term ||
+      String(r.Name||'').toLowerCase().includes(term) ||
+      String(r.Reg||'').toLowerCase().includes(term))
+    .sort((a,b)=> new Date(b.Timestamp)-new Date(a.Timestamp))
+    .forEach(r=>{
+      const tr = document.createElement('tr');
+      const pct = Number(r.Percentage||0);
+      tr.innerHTML = `
+        <td>${new Date(r.Timestamp).toLocaleString()}</td>
+        <td>${r.Name||''}</td>
+        <td>${r.Reg||''}</td>
+        <td>${r.Email||''}</td>
+        <td><b class="${pct>=40?'ok':'bad'}">${r.Score||0}/${r.Total||0}</b></td>
+        <td>${pct.toFixed ? pct.toFixed(2) : pct}%</td>
+        <td>${r['Duration(min)']||0}</td>`;
+      tbody.appendChild(tr);
+    });
+}
+
+document.getElementById('refresh').onclick = load;
+q.oninput = render;
+
+document.getElementById('csv').onclick = () => {
+  const headers = ["Timestamp","Name","Reg","Email","Score","Total","Percentage","Duration(min)"];
+  let csv = headers.join(",")+"\n";
+  rows.forEach(r=>{
+    const line = headers.map(h => "${String(r[h]??'').replace(/"/g,'""')}").join(",");
+    csv += line + "\n";
+  });
+  const blob = new Blob([csv], {type:'text/csv'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'MindSpark_Results.csv';
+  document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+};
+
+load();
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyCof1zHVBekOErvuGxC92XM_tENvHnn18M",
+    authDomain: "aptitude-test-project.firebaseapp.com",
+    projectId: "aptitude-test-project",
+    storageBucket: "aptitude-test-project.firebasestorage.app",
+    messagingSenderId: "934447717890",
+    appId: "1:934447717890:web:1068fa8a19b2dc66e3511b",
+    measurementId: "G-V5VF417VCG"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+  // Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyCof1zHVBekOErvuGxC92XM_tENvHnn18M",
+  authDomain: "aptitude-test-project.firebaseapp.com",
+  projectId: "aptitude-test-project",
+  storageBucket: "aptitude-test-project.firebasestorage.app",
+  messagingSenderId: "934447717890",
+  appId: "1:934447717890:web:1068fa8a19b2dc66e3511b",
+  measurementId: "G-V5VF417VCG"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+</script>
+</script>
+</body>
+</html>

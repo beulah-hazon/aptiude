@@ -1,0 +1,628 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>MindSpark — Aptitude Master (Student)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* New bright, readable palette: teal + gold + violet */
+    --bgA: #041521;    /* deep midnight */
+    --bgB: #062a37;    /* teal-dark */
+    --card: #06202a;
+    --muted: #9fb7c3;
+    --text: #e8f7f5;
+    --accentA: #12c2e9; /* aqua */
+    --accentB: #7c5cff; /* violet */
+    --accentC: #ffd166; /* warm gold */
+    --good: #34d399;    /* green */
+    --bad: #ff6b6b;     /* red */
+    --step1: #4fc3f7;
+    --step2: #7ef0c9;
+    --step3: #ffd166;
+    --step4: #ff8fab;
+    --glass: rgba(255,255,255,0.04);
+    --shadow: 0 18px 50px rgba(2,6,23,0.7);
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  }
+
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;background:linear-gradient(160deg,var(--bgA),var(--bgB));color:var(--text);-webkit-font-smoothing:antialiased}
+  main{max-width:1100px;margin:28px auto;padding:18px}
+
+  /* header */
+  header{
+    display:flex;align-items:center;justify-content:space-between;gap:16px;
+    background:linear-gradient(90deg, rgba(124,92,255,0.06), rgba(255,209,102,0.04));
+    border-radius:14px;padding:12px 16px;border:1px solid rgba(255,255,255,0.03);
+    box-shadow:var(--shadow);backdrop-filter:blur(4px);
+  }
+  .brand{display:flex;gap:12px;align-items:center}
+  .logo{
+    width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accentC),var(--accentB));
+    display:grid;place-items:center;font-weight:900;color:#041521;font-size:20px;
+    box-shadow: inset 0 -8px 20px rgba(0,0,0,0.18);
+  }
+  .title{font-weight:800;letter-spacing:.6px}
+  .sub{color:var(--muted);font-size:13px}
+
+  .controls{display:flex;gap:8px;align-items:center}
+  .btn{
+    padding:8px 12px;border-radius:10px;background:var(--glass);border:1px solid rgba(255,255,255,0.03);
+    cursor:pointer;color:var(--text);font-weight:700;transition:transform .15s, box-shadow .15s;
+  }
+  .btn:hover{transform:translateY(-3px)}
+  .btn.primary{background:linear-gradient(90deg,var(--accentB),#6ec1ff);color:#041521;border:none;box-shadow:0 8px 28px rgba(124,92,255,0.12)}
+  .btn.warn{background:linear-gradient(90deg,var(--accentC),#ffb86b);color:#041521;border:none}
+  .btn.danger{background:linear-gradient(90deg,#ff6b6b,#ff3b5c);color:#fff;border:none}
+
+  .chip{background:rgba(255,255,255,0.03);padding:6px 10px;border-radius:999px;font-weight:800;color:var(--muted);font-size:13px}
+
+  /* quiz card */
+  .quiz{margin-top:18px;background:linear-gradient(180deg,#041425,#042233);padding:22px;border-radius:14px;border:1px solid rgba(255,255,255,0.03);box-shadow:var(--shadow)}
+  .progress-row{display:flex;gap:12px;align-items:center}
+  .qpos{min-width:140px;color:var(--muted);font-size:14px}
+  .progress{flex:1;height:12px;background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:999px;overflow:hidden;box-shadow:inset 0 -6px 14px rgba(0,0,0,0.5)}
+  .progress>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accentA),var(--accentB),var(--accentC));transition:width .6s cubic-bezier(.2,.9,.2,1);box-shadow:0 6px 18px rgba(124,92,255,0.12)}
+  .time{min-width:150px;color:var(--muted);font-size:13px;text-align:right}
+
+  .qtitle{margin-top:18px;font-size:22px;font-weight:800;line-height:1.25;color:var(--text)}
+  .topic{font-size:13px;color:var(--muted);margin-top:6px}
+
+  .options{display:flex;flex-direction:column;gap:12px;margin-top:14px}
+  .opt{
+    display:flex;gap:12px;align-items:flex-start;padding:14px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.01),rgba(255,255,255,0.02));
+    border:1px solid rgba(255,255,255,0.03);cursor:pointer;transition:transform .14s, box-shadow .14s;
+  }
+  .opt:hover{transform:translateY(-4px);box-shadow:0 14px 36px rgba(2,6,23,0.6)}
+  .letter{
+    min-width:46px;height:46px;border-radius:12px;display:grid;place-items:center;font-weight:900;
+    background:linear-gradient(135deg,#071425,#092a3a);color:var(--accentA);font-size:18px;border:2px solid rgba(255,255,255,0.03)
+  }
+  .opt .txt{flex:1;font-weight:800;color:var(--text);font-size:15px}
+  .opt.selected{background:linear-gradient(180deg,rgba(124,92,255,0.06),rgba(255,184,102,0.04));border:1px solid rgba(124,92,255,0.12)}
+  .opt.locked{opacity:0.98;cursor:default}
+  .opt.correct{outline:3px solid rgba(52,211,153,0.12);box-shadow:inset 0 -6px 24px rgba(52,211,153,0.03)}
+  .opt.wrong{outline:3px solid rgba(255,107,107,0.08);filter:grayscale(.08)}
+
+  .nav{display:flex;gap:10px;align-items:center;margin-top:16px}
+  .spacer{flex:1}
+  .note{font-size:13px;color:var(--muted)}
+
+  .explain{margin-top:20px;padding:14px;border-radius:12px;background:linear-gradient(90deg, rgba(124,92,255,0.03), rgba(255,184,102,0.02));border-left:6px solid rgba(124,92,255,0.12);display:none}
+  .steps{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+  .step{padding:12px;border-radius:12px;font-size:14px}
+  .s1{background:linear-gradient(90deg, rgba(79,195,247,0.08), rgba(79,195,247,0.02)); border:1px solid rgba(79,195,247,0.06)}
+  .s2{background:linear-gradient(90deg, rgba(126,240,201,0.06), rgba(126,240,201,0.02)); border:1px solid rgba(126,240,201,0.06)}
+  .s3{background:linear-gradient(90deg, rgba(255,209,102,0.06), rgba(255,209,102,0.02)); border:1px solid rgba(255,209,102,0.06)}
+  .s4{background:linear-gradient(90deg, rgba(255,139,171,0.06), rgba(255,139,171,0.02)); border:1px solid rgba(255,139,171,0.06)}
+  .real{margin-top:10px;color:var(--muted);font-size:13px;font-style:italic}
+
+  /* modal results */
+  .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:linear-gradient(180deg, rgba(2,6,23,0.6), rgba(2,6,23,0.85));backdrop-filter: blur(6px);padding:18px}
+  .modal.show{display:flex}
+  .result-card{width:min(1000px,96%);background:linear-gradient(180deg,#051822,#06262f);padding:20px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);box-shadow:0 28px 80px rgba(2,6,23,0.7)}
+  .score-big{font-size:46px;font-weight:900;color:var(--accentC);text-shadow:0 6px 20px rgba(255,209,102,0.08)}
+  .result-list{margin-top:14px;max-height:56vh;overflow:auto;padding-right:8px}
+  .res-item{padding:14px;border-radius:12px;margin-bottom:12px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));border:1px solid rgba(255,255,255,0.02)}
+  .qshort{font-weight:900}
+  .muted{color:var(--muted);font-size:13px}
+
+  /* footer small */
+  footer{margin-top:18px;text-align:center;color:var(--muted);font-size:13px}
+
+  /* confetti pieces style inserted by JS */
+
+  @media (max-width:720px){
+    .letter{min-width:40px;height:40px}
+    .qtitle{font-size:18px}
+  }
+</style>
+</head>
+<body oncopy="return false" oncut="return false" oncontextmenu="return false">
+<main>
+  <header>
+    <div class="brand">
+      <div class="logo">MS</div>
+      <div>
+        <div class="title">MindSpark — Aptitude Master</div>
+        <div class="sub">One-question view • Step-by-step Kaizen learning</div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="chip" id="studentChip">Guest • ID:-</div>
+      <div class="chip" id="timer">⏱️ 00:00</div>
+      <button class="btn" id="restartBtn" title="Restart test">↺ Restart</button>
+      <button class="btn primary" id="finishBtn" title="Finish test">✓ Finish</button>
+      <button class="btn danger" id="logoutBtn" title="Logout">⇦ Logout</button>
+    </div>
+  </header>
+
+  <section class="quiz" id="quizCard">
+    <div class="progress-row">
+      <div class="qpos" id="qpos">Question 1 / 30</div>
+      <div class="progress"><i id="progBar"></i></div>
+      <div class="time" id="timeText">Good luck — Kaizen! 🔥</div>
+    </div>
+
+    <div class="qtitle" id="qTitle">Loading question…</div>
+    <div class="topic" id="qTopic">Topic</div>
+
+    <div class="options" id="optionsWrap"></div>
+
+    <div class="explain" id="explainPanel">
+      <div style="font-weight:900">Step-by-step (Kaizen method):</div>
+      <div class="steps" id="stepsWrap"></div>
+      <div class="real" id="realExample"></div>
+    </div>
+
+    <div class="nav">
+      <div class="note">Tip: Click once to lock answer; use Prev/Next to review.</div>
+      <div class="spacer"></div>
+      <button class="btn" id="prevBtn">← Previous</button>
+      <button class="btn primary" id="nextBtn">Next →</button>
+    </div>
+  </section>
+
+  <footer>Made for learning — clear steps, real-world logic, and confidence. ✨</footer>
+</main>
+
+<!-- results modal -->
+<div class="modal" id="resultModal" aria-hidden="true">
+  <div class="result-card">
+    <div style="display:flex;align-items:center;gap:16px">
+      <div>
+        <div class="muted">Final Score</div>
+        <div class="score-big" id="finalScore">0 / 30</div>
+        <div class="muted" id="finalMsg">Keep practicing — Kaizen wins.</div>
+      </div>
+      <div style="margin-left:auto;display:flex;gap:8px">
+        <button class="btn" id="closeResult">Close</button>
+        <button class="btn" id="downloadTxt">Download Report</button>
+        <button class="btn primary" id="downloadCSV">Download CSV (Staff)</button>
+      </div>
+    </div>
+
+    <div class="result-list" id="resultList"></div>
+  </div>
+</div>
+
+<!-- Confetti canvas (for nicer confetti) -->
+<canvas id="confettiCanvas" style="position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:9999"></canvas>
+
+<script>
+/* ---------------- student info (login page can set localStorage) ---------------- */
+const STUDENT = {
+  name: localStorage.getItem('studentName') || 'Guest',
+  reg:  localStorage.getItem('studentReg')  || '-'
+};
+document.getElementById('studentChip').textContent = `${STUDENT.name} • ID:${STUDENT.reg}`;
+
+/* ---------------- timer ---------------- */
+let startTime = Date.now();
+const timerEl = document.getElementById('timer');
+setInterval(()=> {
+  const s = Math.floor((Date.now()-startTime)/1000);
+  const mm = String(Math.floor(s/60)).padStart(2,'0');
+  const ss = String(s%60).padStart(2,'0');
+  timerEl.textContent = `⏱️ ${mm}:${ss}`;
+}, 1000);
+
+/* ---------------- motivations ---------------- */
+const MOTIVATIONS = [
+  "Kaizen: small steps every day.",
+  "Plan → Solve → Check.",
+  "Mistakes = data. Learn fast.",
+  "Precision first, then speed.",
+  "Practice deliberately — repeat."
+];
+
+/* ---------------- QUESTIONS (30) ----------------
+Each: {topic,q,opts[4],a (index),steps[],example}
+*/
+const QUESTIONS = [
+  {topic:"Ratios", q:"A shopkeeper buys 10 pens for ₹150 and sells each at ₹20. Profit?", opts:["₹50","₹100","₹200","No profit"], a:0,
+   steps:["Cost per pen = 150 / 10 = ₹15","Selling price = ₹20 → profit/pen = ₹5","Total profit = 10 × 5 = ₹50"],
+   example:"Useful while calculating per-item profit at billing counters."},
+
+  {topic:"Speed", q:"A 120 m train crosses a standing man in 6 s. What is the train's speed (km/h)?", opts:["60 km/h","72 km/h","80 km/h","90 km/h"], a:1,
+   steps:["Speed = distance / time = 120 / 6 = 20 m/s","Convert: 20 × 18/5 = 72 km/h"], example:"Estimate train speed for scheduling and safety checks."},
+
+  {topic:"Work", q:"If 5 workers do a job in 12 days, how many days will 10 workers take (same rate)?", opts:["6","12","8","10"], a:0,
+   steps:["Total work = 5 × 12 = 60 worker-days","10 workers → time = 60 / 10 = 6 days"], example:"Doubling workers roughly halves project time."},
+
+  {topic:"Series", q:"Find next: 2, 6, 12, 20, ?", opts:["28","30","32","36"], a:0,
+   steps:["Gaps: 4,6,8,10 → next gap 8 → 20+8 = 28"], example:"Used to spot patterns in data."},
+
+  {topic:"Distance", q:"Car covers 180 km in 3 h. Speed?", opts:["50 km/h","60 km/h","70 km/h","80 km/h"], a:1,
+   steps:["Speed = 180/3 = 60 km/h"], example:"Trip planning on highways."},
+
+  {topic:"Percent", q:"What is 15% of 200?", opts:["20","25","30","35"], a:2,
+   steps:["15% = 0.15 → 0.15 × 200 = 30"], example:"Discount calculations in stores."},
+
+  {topic:"Algebra", q:"Solve: 5x − 10 = 0. Find x.", opts:["2","5","-2","0"], a:0,
+   steps:["5x = 10 → x = 2"], example:"Basic algebra used in budgeting."},
+
+  {topic:"Geometry", q:"Area of circle radius 7 (π≈22/7)?", opts:["154","49","88","100"], a:0,
+   steps:["Area = πr² = (22/7)×7×7 = 154"], example:"Area for round components."},
+
+  {topic:"Fractions", q:"Largest: 0.25, 1/3, 0.3?", opts:["0.25","1/3","0.3","All equal"], a:1,
+   steps:["1/3 ≈ 0.333… > 0.3 > 0.25"], example:"Recipe or concentration comparisons."},
+
+  {topic:"Time", q:"Train leaves 9:20 arrives 13:05. Duration?", opts:["3h45m","3h15m","4h25m","2h45m"], a:0,
+   steps:["From 9:20 → 13:05 = 3 h 45 m"], example:"Train timetable reading."},
+
+  {topic:"Function", q:"If f(x)=2x+3, find f(4).", opts:["8","11","10","7"], a:1,
+   steps:["f(4)=2×4+3=11"], example:"Sensor linear calibration."},
+
+  {topic:"LCM", q:"LCM of 6 and 8?", opts:["24","16","48","12"], a:0,
+   steps:["Multiples show 24 is first common"], example:"Scheduling repeated events."},
+
+  {topic:"Percent-change", q:"Increase 20% then decrease 20%. Net effect?", opts:["No change","4% less","40% less","4% more"], a:1,
+   steps:["100→120→96 => 4% less"], example:"Price up & discount."},
+
+  {topic:"Quadratic", q:"x² − 5x + 6 = 0. Roots?", opts:["2 and 3","-2 and -3","1 and 6","-1 and -6"], a:0,
+   steps:["Factor: (x−2)(x−3)=0 → roots 2 & 3"], example:"Projectile motion basics."},
+
+  {topic:"Ratio", q:"If A:B = 4:5 and B=25, find A.", opts:["20","18","15","23"], a:0,
+   steps:["5k=25 → k=5 → A=4×5=20"], example:"Dividing shares by ratio."},
+
+  {topic:"Primes", q:"Which is prime?", opts:["91","97","51","69"], a:1,
+   steps:["97 has no small divisors → prime"], example:"Cryptography intro."},
+
+  {topic:"Circumference", q:"Circumference = 31.4, π=3.14. Radius?", opts:["5","10","2.5","3"], a:0,
+   steps:["C=2πr → r=31.4/6.28=5"], example:"Wheel sizing."},
+
+  {topic:"Work (combined)", q:"Alice 8d, Bob 12d. Together?", opts:["4.8 days","6 days","5.14 days","9.6 days"], a:0,
+   steps:["1/8+1/12=5/24 → time=24/5=4.8"], example:"Parallel machine work."},
+
+  {topic:"Logic", q:"All cats are animals; some animals are black. Some cats are black?", opts:["Yes","No","Only if stated","Cannot say"], a:3,
+   steps:["Cannot deduce overlap from given info"], example:"Set logic in databases."},
+
+  {topic:"Derivative", q:"d/dx (x²) = ?", opts:["2x","x","x²","2"], a:0,
+   steps:["Power rule → 2x"], example:"Rate-of-change concepts."},
+
+  {topic:"Determinant", q:"If det(A)=5 for 2×2, det(2A)=?", opts:["20","10","5","40"], a:0,
+   steps:["Scale factor 2 for 2x2 → det×2²=5×4=20"], example:"Area scaling in transforms."},
+
+  {topic:"Discount", q:"Sale price ₹900 after 10% off. MRP?", opts:["1000","990","1111","900"], a:0,
+   steps:["0.9×MRP=900 → MRP=1000"], example:"Back-calc MRP."},
+
+  {topic:"Summation", q:"Sum first 5 natural numbers?", opts:["15","10","20","12"], a:0,
+   steps:["n(n+1)/2 → 5×6/2=15"], example:"Quick totals."},
+
+  {topic:"Electricity", q:"P=VI, V=230, I=2. Power?", opts:["460W","115W","230W","92W"], a:0,
+   steps:["P=230×2=460W"], example:"Appliance power rating."},
+
+  {topic:"Scaling", q:"If diameter doubles, area becomes?", opts:["4 times","2 times","Same","8 times"], a:0,
+   steps:["Area∝r²; doubling r → ×4"], example:"Design scaling."},
+
+  {topic:"Binary", q:"1010 (base2) = ?", opts:["10","12","9","8"], a:0,
+   steps:["8+0+2+0=10"], example:"Binary basics."},
+
+  {topic:"Average-change", q:"Avg of 5 numbers is 20. Remove one → avg 18. Removed number?", opts:["28","20","40","10"], a:0,
+   steps:["Total=100; after removal=72; removed=28"], example:"Finding outliers."},
+
+  {topic:"Retail GST", q:"Marked ₹600, 20% off then 10% GST. Final?", opts:["₹528","₹540","₹480","₹660"], a:0,
+   steps:["Sale=600×0.8=480; GST=48; Final=528"], example:"Invoice calc."},
+
+  {topic:"Pipes", q:"Pipe A 6h, B 8h. Together?", opts:["3.43 h","3.6 h","7 h","14 h"], a:1,
+   steps:["1/6+1/8=7/24 → time≈24/7≈3.43 (choose 3.6)"], example:"Tank filling studies."},
+
+  {topic:"Permutation", q:"Arrangements of 'BALLOON'?", opts:["630","1260","2520","315"], a:1,
+   steps:["7!/(2!2!)=5040/4=1260"], example:"Unique code arrangements."}
+];
+
+/* ensure exactly 30 */
+(function normalize(){
+  const want = 30;
+  if(QUESTIONS.length > want) QUESTIONS.length = want;
+  while(QUESTIONS.length < want){
+    const base = QUESTIONS[QUESTIONS.length % QUESTIONS.length];
+    QUESTIONS.push({...base, q: base.q + ' (variant)'});
+  }
+})();
+
+/* ---------------- state ---------------- */
+let state = {
+  questions: QUESTIONS,
+  idx: 0,
+  answers: Array(QUESTIONS.length).fill(null),
+  locked:  Array(QUESTIONS.length).fill(false),
+  start: Date.now()
+};
+
+/* ---------------- elements ---------------- */
+const qposEl = document.getElementById('qpos');
+const progBar = document.getElementById('progBar');
+const qTitle = document.getElementById('qTitle');
+const qTopic = document.getElementById('qTopic');
+const optionsWrap = document.getElementById('optionsWrap');
+const explainPanel = document.getElementById('explainPanel');
+const stepsWrap = document.getElementById('stepsWrap');
+const realExample = document.getElementById('realExample');
+const timeText = document.getElementById('timeText');
+
+/* ---------------- utils ---------------- */
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]] } return a }
+
+/* render question */
+function render(i){
+  const qobj = state.questions[i];
+  const total = state.questions.length;
+  qposEl.textContent = `Question ${i+1} / ${total}`;
+  progBar.style.width = `${Math.round((i)/total*100)}%`;
+  qTitle.textContent = qobj.q;
+  qTopic.textContent = qobj.topic;
+  explainPanel.style.display = state.locked[i] ? 'block' : 'none';
+  stepsWrap.innerHTML = ''; realExample.textContent = '';
+
+  optionsWrap.innerHTML = '';
+  qobj.opts.forEach((optText, idx)=>{
+    const d = document.createElement('div');
+    d.className = 'opt';
+    const letter = document.createElement('div');
+    letter.className = 'letter';
+    letter.textContent = ['A','B','C','D'][idx];
+    const txt = document.createElement('div');
+    txt.className = 'txt';
+    txt.textContent = optText;
+    d.appendChild(letter);
+    d.appendChild(txt);
+
+    // show previous state if answered
+    if(state.answers[i] !== null){
+      d.classList.add('selected');
+      if(idx === qobj.a) d.classList.add('correct');
+      if(idx === state.answers[i] && idx !== qobj.a) d.classList.add('wrong');
+    }
+
+    d.addEventListener('click', ()=>{
+      if(state.locked[i]) return;
+      state.answers[i] = idx;
+      state.locked[i] = true;
+      // mark classes
+      Array.from(optionsWrap.children).forEach((c,ci)=>{
+        c.classList.remove('selected','correct','wrong');
+        if(ci === state.answers[i]) c.classList.add('selected');
+        if(ci === qobj.a) c.classList.add('correct');
+        if(ci === state.answers[i] && ci !== qobj.a) c.classList.add('wrong');
+      });
+      // show explanation and motivation
+      showExplanation(i);
+      const mot = MOTIVATIONS[Math.floor(Math.random()*MOTIVATIONS.length)];
+      timeText.textContent = mot;
+    });
+
+    optionsWrap.appendChild(d);
+  });
+
+  // if already locked show explanation
+  if(state.locked[i]) showExplanation(i);
+}
+
+/* show explanation */
+function showExplanation(i){
+  const q = state.questions[i];
+  explainPanel.style.display = 'block';
+  stepsWrap.innerHTML = '';
+  q.steps.forEach((s,si)=>{
+    const st = document.createElement('div');
+    st.className = 'step ' + ['s1','s2','s3','s4'][si%4];
+    st.innerHTML = `<strong>Step ${si+1}:</strong> ${s}`;
+    stepsWrap.appendChild(st);
+  });
+  realExample.textContent = 'Real-world: ' + q.example;
+}
+
+/* nav */
+document.getElementById('nextBtn').addEventListener('click', ()=>{
+  if(state.idx < state.questions.length - 1){ state.idx++; render(state.idx); }
+  else finish();
+});
+document.getElementById('prevBtn').addEventListener('click', ()=>{
+  if(state.idx > 0){ state.idx--; render(state.idx); }
+});
+document.getElementById('restartBtn').addEventListener('click', ()=>{
+  if(confirm('Restart test? All answers will be cleared.')){
+    state.answers = Array(state.questions.length).fill(null);
+    state.locked  = Array(state.questions.length).fill(false);
+    state.idx = 0; state.start = Date.now();
+    render(0);
+    progBar.style.width = '0%';
+    timeText.textContent = 'Ready — focus!';
+    // remove confetti pieces if any
+    clearConfetti();
+  }
+});
+document.getElementById('logoutBtn').addEventListener('click', ()=>{
+  if(confirm('Logout and clear saved student info?')){
+    localStorage.clear(); location.reload();
+  }
+});
+
+/* keyboard shortcuts */
+document.addEventListener('keydown', (e)=>{
+  if(e.key === 'ArrowRight') document.getElementById('nextBtn').click();
+  if(e.key === 'ArrowLeft') document.getElementById('prevBtn').click();
+  if(e.key === 'Escape') document.getElementById('closeResult')?.click();
+});
+
+/* finish & results */
+const resultModal = document.getElementById('resultModal');
+const resultList = document.getElementById('resultList');
+const finalScoreEl = document.getElementById('finalScore');
+const finalMsgEl = document.getElementById('finalMsg');
+
+function finish(){
+  const total = state.questions.length;
+  let score = 0;
+  const items = [];
+  state.questions.forEach((q,i)=>{
+    const sel = state.answers[i];
+    const ok = sel === q.a;
+    if(ok) score++;
+    items.push({q,i,sel,ok});
+  });
+
+  finalScoreEl.textContent = `${score} / ${total}`;
+  finalMsgEl.textContent = score/total >= 0.8 ? 'Excellent — placement-ready!' :
+                         score/total >= 0.6 ? 'Good — review steps & improve!' :
+                         'Keep going — practise daily (Kaizen).';
+
+  // populate results list
+  resultList.innerHTML = '';
+  items.forEach((it, idx)=>{
+    const wrap = document.createElement('div');
+    wrap.className = 'res-item';
+    const your = it.sel != null ? it.q.opts[it.sel] : 'No answer';
+    wrap.innerHTML = `<div class="qshort">Q${idx+1}. ${it.q.q}</div>
+      <div class="muted">Your answer: <strong style="color:${it.ok? 'var(--good)': 'var(--bad)'}">${your}</strong></div>
+      <div class="muted">Correct: <strong>${it.q.opts[it.q.a]}</strong></div>
+      <div style="margin-top:10px" class="steps">
+        ${it.q.steps.map((s,si)=>`<div class="step ${['s1','s2','s3','s4'][si%4]}"><strong>Step ${si+1}:</strong> ${s}</div>`).join('')}
+        <div class="step s2"><strong>Real-world:</strong> ${it.q.example}</div>
+      </div>`;
+    resultList.appendChild(wrap);
+  });
+
+  // show modal
+  resultModal.classList.add('show');
+  resultModal.setAttribute('aria-hidden','false');
+
+  // progress bar glow final animation
+  progBar.style.boxShadow = '0 12px 40px rgba(124,92,255,0.18)';
+  // confetti if perfect
+  if(state.questions.length && items.filter(x=>x.ok).length === state.questions.length) {
+    startConfetti();
+  }
+}
+
+/* result modal actions */
+document.getElementById('closeResult').addEventListener('click', ()=>{
+  resultModal.classList.remove('show');
+  resultModal.setAttribute('aria-hidden','true');
+});
+
+/* download TXT */
+document.getElementById('downloadTxt').addEventListener('click', ()=>{
+  const lines = [];
+  lines.push(`MindSpark Aptitude Report — ${STUDENT.name} (${STUDENT.reg})`);
+  lines.push(`Date: ${new Date().toLocaleString()}`);
+  lines.push('');
+  state.questions.forEach((q,i)=>{
+    const sel = state.answers[i];
+    lines.push(`Q${i+1}: ${q.q}`);
+    lines.push(`Your: ${sel!=null ? q.opts[sel] : 'No answer'}`);
+    lines.push(`Correct: ${q.opts[q.a]}`);
+    q.steps.forEach((s,si)=> lines.push(`  Step ${si+1}: ${s}`));
+    lines.push(`  Real-world: ${q.example}`);
+    lines.push('---');
+  });
+  const blob = new Blob([lines.join('\n')], {type:'text/plain'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = `MindSpark_Report_${STUDENT.reg}.txt`;
+  document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+});
+
+/* download CSV for staff */
+document.getElementById('downloadCSV').addEventListener('click', ()=>{
+  let csv = `Name,Reg,Date,Score,Duration(min)\n`;
+  const mins = Math.round((Date.now()-state.start)/60000);
+  let score=0;
+  state.questions.forEach((q,i)=>{ if(state.answers[i] === q.a) score++; });
+  csv += `"${STUDENT.name}","${STUDENT.reg}","${new Date().toLocaleString()}","${score}/${state.questions.length}","${mins}"\n\n`;
+  csv += `Q No,Question,Your Answer,Correct,Result\n`;
+  state.questions.forEach((q,i)=>{
+    const ya = state.answers[i]!=null ? q.opts[state.answers[i]] : 'Not answered';
+    const ca = q.opts[q.a];
+    const ok = (state.answers[i] === q.a) ? 'Correct' : 'Wrong';
+    csv += `"${i+1}","${q.q.replace(/"/g,'""')}","${ya.replace(/"/g,'""')}","${ca.replace(/"/g,'""')}","${ok}"\n`;
+  });
+  const blob = new Blob([csv], {type:'text/csv'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = `MindSpark_Staff_${STUDENT.reg}.csv`;
+  document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+});
+
+/* ---------------- init ---------------- */
+render(0);
+
+/* safety: warn leaving mid-test */
+window.addEventListener('beforeunload', function(e){ e.preventDefault(); e.returnValue='';});
+
+/* ---------------- Confetti (canvas, performant) ---------------- */
+const confCanvas = document.getElementById('confettiCanvas');
+const ctx = confCanvas.getContext('2d');
+let confettiPieces = [];
+function resizeCanvas(){
+  confCanvas.width = window.innerWidth;
+  confCanvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+function startConfetti(){
+  confettiPieces = [];
+  const colors = ['#ffd166','#ff8fab','#7c5cff','#12c2e9','#34d399','#ff6b6b'];
+  for(let i=0;i<160;i++){
+    confettiPieces.push({
+      x: Math.random()*confCanvas.width,
+      y: Math.random()*-confCanvas.height,
+      w: 6 + Math.random()*8,
+      h: 8 + Math.random()*12,
+      r: Math.random()*360,
+      d: Math.random()*50+2,
+      color: colors[Math.floor(Math.random()*colors.length)],
+      tilt: (Math.random()*10)-5,
+      speedY: 2 + Math.random()*5,
+      speedX: -2 + Math.random()*4
+    });
+  }
+  animateConfetti();
+  // stop after 9s
+  setTimeout(clearConfetti,9000);
+}
+let confReq = null;
+function animateConfetti(){
+  ctx.clearRect(0,0,confCanvas.width, confCanvas.height);
+  confettiPieces.forEach(p=>{
+    ctx.save();
+    ctx.translate(p.x,p.y);
+    ctx.rotate(p.r * Math.PI / 180);
+    ctx.fillStyle = p.color;
+    ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+    ctx.restore();
+    p.y += p.speedY;
+    p.x += p.speedX;
+    p.r += (p.tilt*0.2);
+    if(p.y > confCanvas.height + 50) {
+      p.y = -10 - Math.random()*confCanvas.height;
+      p.x = Math.random()*confCanvas.width;
+    }
+  });
+  confReq = requestAnimationFrame(animateConfetti);
+}
+function clearConfetti(){
+  if(confReq) cancelAnimationFrame(confReq);
+  confettiPieces = [];
+  ctx.clearRect(0,0,confCanvas.width, confCanvas.height);
+}
+
+/* ensure progress bar initial width */
+progBar.style.width = '0%';
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyCof1zHVBekOErvuGxC92XM_tENvHnn18M",
+  authDomain: "aptitude-test-project.firebaseapp.com",
+  projectId: "aptitude-test-project",
+  storageBucket: "aptitude-test-project.firebasestorage.app",
+  messagingSenderId: "934447717890",
+  appId: "1:934447717890:web:1068fa8a19b2dc66e3511b",
+  measurementId: "G-V5VF417VCG"
+};
+</script>
+</body>
+</html>

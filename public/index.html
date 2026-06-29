@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>🧠 MindSpark Challenge — Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&family=Noto+Sans+JP&family=Zen+Maru+Gothic&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  display:flex; justify-content:center; align-items:center; min-height:100vh;
+  font-family:'Noto Sans JP',sans-serif;
+  background: linear-gradient(135deg, #fffaf0, #e0f7fa, #fef6ff);
+  background-size: 400% 400%;
+  animation: bgAnimate 20s ease infinite;
+}
+@keyframes bgAnimate{0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;}}
+
+.card{
+  background: #fff; border-radius:28px; padding:40px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+  width:360px; text-align:center; font-family:'Zen Maru Gothic', 'Noto Sans JP', sans-serif;
+  animation:slideUpFade 1s ease;
+  position:relative; overflow:hidden;
+}
+@keyframes slideUpFade{from{transform:translateY(50px);opacity:0;} to{transform:translateY(0);opacity:1;}}
+
+.logo {display:flex; flex-direction:column; align-items:center; gap:8px; margin-bottom:20px;}
+.logo svg {border-radius:50%; box-shadow:0 6px 20px rgba(0,0,0,0.15);}
+.logo p {font-family:'Zen Maru Gothic', sans-serif; font-size:1.6rem; color:#2c3e50; font-weight:700; letter-spacing:1px;}
+
+.muted{color:#555; font-size:1rem; margin-bottom:18px; font-family:'Noto Sans JP',sans-serif;}
+
+.form{display:flex; flex-direction:column; gap:12px; margin-top:10px;}
+input[type=text], input[type=email]{
+  padding:12px 16px; border:2px solid #ddd; border-radius:12px;
+  font-size:1rem; transition:0.4s; outline:none; background:#fefefe;
+}
+input:focus{border-color:#ff8c94; box-shadow:0 0 12px rgba(255,140,148,0.5); transform:scale(1.02);}
+
+.actions{margin-top:20px;}
+.btn{
+  padding:14px; border:none; border-radius:16px; font-size:1.1rem; cursor:pointer;
+  transition:0.5s; width:100%; font-weight:700;
+  background: linear-gradient(135deg, #ffb347, #ffcc33);
+  color:#fff; box-shadow:0 6px 20px rgba(0,0,0,0.15);
+  position:relative; overflow:hidden; font-family:'Roboto',sans-serif;
+}
+.btn::after{
+  content:''; position:absolute; top:0; left:-100%; width:100%; height:100%;
+  background: rgba(255,255,255,0.2); transform:skewX(-20deg);
+  transition:0.5s;
+}
+.btn:hover::after{left:100%;}
+.btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 8px 25px rgba(0,0,0,0.25);
+  background: linear-gradient(135deg, #89f7fe, #66a6ff);
+}
+
+#motivation{
+  margin-top:12px; font-weight:700; color:#ff6f61; font-size:1.05rem;
+  font-family:'Roboto',sans-serif;
+}
+.instructions-toggle{
+  background:#ff8c94; color:#fff; font-weight:700; border-radius:14px;
+  padding:12px; margin-top:16px; cursor:pointer; transition:0.3s;
+  font-size:0.95rem; display:inline-block; font-family:'Roboto',sans-serif;
+}
+.instructions-toggle:hover{background:#ff6f61;}
+
+.instructions-content{
+  display:none; margin-top:10px; background:linear-gradient(135deg,#ffe6e6,#fff0f5); border-left:6px solid #ff8c94;
+  padding:14px; border-radius:12px; text-align:left; font-size:0.9rem; font-family:'Noto Sans JP',sans-serif;
+  animation:slideDown 0.5s ease;
+}
+.instructions-content ul{list-style:disc; padding-left:20px;}
+.instructions-content ul li{margin:4px 0; line-height:1.4;}
+@keyframes slideDown{from{opacity:0; transform:translateY(-8px);} to{opacity:1; transform:translateY(0);}}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="logo">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="80" height="80">
+      <circle cx="50" cy="50" r="48" fill="#e60012"/>
+      <path d="M35,50 Q50,30 65,50 Q50,70 35,50 Z" fill="white"/>
+    </svg>
+    <p>MindSpark Challenge</p>
+  </div>
+
+  <p class="muted">🧠 Sharpen your brain, unlock your potential!</p>
+  <div id="motivation">💡 Good luck — Do your best!</div>
+
+  <!-- Login / Registration Form -->
+  <form id="loginForm" class="form">
+    <input id="name" type="text" placeholder="Enter your full name" required />
+    <input id="reg" type="text" placeholder="Enter your unique ID" required />
+    <input id="email" type="email" placeholder="Email (optional)" />
+    <label><input id="honor" type="checkbox" required /> I agree to follow the honor code</label>
+
+    <div class="actions">
+      <button type="submit" class="btn">🚀 Start Test</button>
+    </div>
+  </form>
+
+  <div class="instructions-toggle" onclick="toggleInstructions()">📌 View Instructions</div>
+  <div class="instructions-content" id="instructions">
+    <ul>
+      <li>Test your knowledge in 30 innovative questions.</li>
+      <li>Do not refresh or switch tabs — answers auto-submit.</li>
+      <li>Fill your <strong>Full Name</strong> and <strong>Unique ID</strong> correctly.</li>
+      <li>Follow the <strong>honor code</strong>.</li>
+      <li>Focus, stay calm, and enjoy the challenge.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- Firebase CDN Scripts -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT_ID.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// Form submit handler
+document.getElementById('loginForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  const name=document.getElementById('name').value.trim();
+  const reg=document.getElementById('reg').value.trim();
+  const email=document.getElementById('email').value.trim();
+  const honor=document.getElementById('honor').checked;
+  if(!name || !reg || !honor){ alert('Please fill all required fields and agree to the honor code'); return; }
+
+  localStorage.setItem('studentName', name);
+  localStorage.setItem('studentReg', reg);
+  localStorage.setItem('studentEmail', email);
+  localStorage.setItem('attemptStarted','1');
+  localStorage.setItem('testStartTime',Date.now());
+
+  // Save to Firestore (optional)
+  db.collection('students').add({name, reg, email, startedAt: new Date()})
+    .catch(err=>console.warn('Firestore save failed', err));
+
+  alert(`Good luck, ${name}! Your test will start now 🚀`);
+  window.location.href='test.html';
+});
+
+// Prefill from localStorage
+document.getElementById('name').value = localStorage.getItem('studentName') || '';
+document.getElementById('reg').value  = localStorage.getItem('studentReg')  || '';
+document.getElementById('email').value= localStorage.getItem('studentEmail') || '';
+
+// Instructions toggle
+function toggleInstructions(){
+  const ins=document.getElementById('instructions');
+  ins.style.display=ins.style.display==='block'?'none':'block';
+}
+</script>
+
+</body>
+</html>
